@@ -33,3 +33,18 @@ for direct in os.listdir(data_path):
 
         #Process the image to detect hand landmarks
         results = hands.process(image_rgb)
+
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                for i in range(len(hand_landmarks.landmark)):
+                    x = hand_landmarks.landmark[i].x
+                    y = hand_landmarks.landmark[i].y
+
+                    x_aux.append(x)
+                    y_aux.append(y)
+
+                for i in range(len(hand_landmarks.landmark)):
+                    x = hand_landmarks.landmark[i].x
+                    y = hand_landmarks.landmark[i].y
+                    data_aux.append(x - min(x_aux))
+                    data_aux.append(y - min(y_aux))
