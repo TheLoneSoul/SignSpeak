@@ -48,3 +48,11 @@ for direct in os.listdir(data_path):
                     y = hand_landmarks.landmark[i].y
                     data_aux.append(x - min(x_aux))
                     data_aux.append(y - min(y_aux))
+
+            if (len(data_aux) == 42):
+                data.append(data_aux)
+                labels.append(direct)
+
+file = open('dataset.pickle', 'wb')
+pickle.dump({'data': data, 'labels': labels}, file)
+file.close()
