@@ -22,3 +22,8 @@ y_prediction = model.predict(x_test)
 #Evaluate accuracy
 score = accuracy_score(y_prediction, y_test)
 print('{}% of image samples were classified Successfully !'.format(score * 100))
+
+#Save trained model
+file = open('model.p', 'wb')
+pickle.dump({'model': model}, file)
+file.close()
