@@ -20,3 +20,22 @@ hands = mediapipe_hands.Hands(static_image_mode=True, min_detection_confidence=0
 
 #Label mapping for prediction
 labels_dict = {0: 'A', 1: 'B', 2: 'T', 3: 'D', 4: 'S', 5: 'M', 6: 'N'}
+
+#Check if camera is open/close
+while cap.isOpened():
+    # Prepare auxiliary lists for normalized landmark data
+    data_aux = []
+    x_aux = []
+    y_aux = []
+
+    # Read a frame from webcam
+    ret, frame = cap.read()
+
+    # Get frame dimensions
+    H, W, _ = frame.shape
+
+    # Convert frame to RGB as required by MediaPipe
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Process the frame for hand landmarks
+    results = hands.process(frame_rgb)
