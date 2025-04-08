@@ -50,3 +50,16 @@ while cap.isOpened():
                 mediapipe_drawing_styles.get_default_hand_landmarks_style(),
                 mediapipe_drawing_styles.get_default_hand_connections_style())
 
+        for hand_landmarks in results.multi_hand_landmarks:
+            for i in range(len(hand_landmarks.landmark)):
+                x = hand_landmarks.landmark[i].x
+                y = hand_landmarks.landmark[i].y
+
+                x_aux.append(x)
+                y_aux.append(y)
+
+            for i in range(len(hand_landmarks.landmark)):
+                x = hand_landmarks.landmark[i].x
+                y = hand_landmarks.landmark[i].y
+                data_aux.append(x - min(x_aux))
+                data_aux.append(y - min(y_aux))
