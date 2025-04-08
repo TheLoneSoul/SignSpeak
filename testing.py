@@ -39,3 +39,14 @@ while cap.isOpened():
 
     # Process the frame for hand landmarks
     results = hands.process(frame_rgb)
+
+    # Draws detected hand landmarks on the frame
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            mediapipe_drawing.draw_landmarks(
+                frame,  # image to draw
+                hand_landmarks,  # model output
+                mediapipe_hands.HAND_CONNECTIONS,  # hand connections
+                mediapipe_drawing_styles.get_default_hand_landmarks_style(),
+                mediapipe_drawing_styles.get_default_hand_connections_style())
+
