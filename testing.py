@@ -50,16 +50,32 @@ while cap.isOpened():
                 mediapipe_drawing_styles.get_default_hand_landmarks_style(),
                 mediapipe_drawing_styles.get_default_hand_connections_style())
 
+        # Loop through landmarks again to extract and normalize coordinates
         for hand_landmarks in results.multi_hand_landmarks:
+            # Collect raw landmark positions
             for i in range(len(hand_landmarks.landmark)):
                 x = hand_landmarks.landmark[i].x
                 y = hand_landmarks.landmark[i].y
 
                 x_aux.append(x)
                 y_aux.append(y)
-
+            # Normalize landmarks relative to minimum x and y
             for i in range(len(hand_landmarks.landmark)):
                 x = hand_landmarks.landmark[i].x
                 y = hand_landmarks.landmark[i].y
                 data_aux.append(x - min(x_aux))
                 data_aux.append(y - min(y_aux))
+
+        # Convert normalized landmarks into bounding box coordinates
+        x1 = int(min(x_aux) * W) - 10
+        x2 = int(max(x_aux) * W) - 10
+        y1 = int(min(y_aux) * H) - 10
+        y2 = int(max(y_aux) * H) - 10
+
+        # Predict the gesture using a trained model
+        prediction = model.predict([np.asarray(data_aux)])
+        predicted_character = labels_dict[int(prediction[0])]
+
+        # Draw bounding box and prediction label on the frame
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
+        cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
