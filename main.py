@@ -66,7 +66,6 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
 
     if session_id not in session_data:
         session_data[session_id] = {
-            "word": "",
             "sentence": "",
             "last_detected_time": None,
             "current_character": None,
@@ -78,7 +77,7 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
 
     frame = cv2.resize(frame, (640, 480))
     data_aux = []
-    x_, y_ = [], []
+    x_aux, y_aux = [], []
     H, W, _ = frame.shape
 
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -87,11 +86,11 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
             for lm in hand_landmarks.landmark:
-                x_.append(lm.x)
-                y_.append(lm.y)
+                x_aux.append(lm.x)
+                y_aux.append(lm.y)
             for lm in hand_landmarks.landmark:
-                data_aux.append(lm.x - min(x_))
-                data_aux.append(lm.y - min(y_))
+                data_aux.append(lm.x - min(x_aux))
+                data_aux.append(lm.y - min(y_aux))
 
             mp_drawing.draw_landmarks(
                 frame,
@@ -104,10 +103,10 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
         if len(data_aux) != 42:
             return {"image": "", "sentence": user["sentence"]}
 
-        x1 = int(min(x_) * W) - 10
-        y1 = int(min(y_) * H) - 10
-        x2 = int(max(x_) * W) + 10
-        y2 = int(max(y_) * H) + 10
+        x1 = int(min(x_aux) * W) - 10
+        y1 = int(min(y_aux) * H) - 10
+        x2 = int(max(x_aux) * W) + 10
+        y2 = int(max(y_aux) * H) + 10
 
         prediction = model.predict([np.asarray(data_aux)])
         predicted_index = int(prediction[0])
@@ -117,19 +116,16 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
             user["last_detected_time"] = time.time()
         user["current_character"] = predicted_character
 
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 4)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 4)
         cv2.putText(frame, predicted_character, (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
 
         if time.time() - user["last_detected_time"] >= 2:
             if predicted_character == "Bk":
-                user["word"] = user["word"][:-1]
                 user["sentence"] = user["sentence"][:-1]
             elif predicted_character == " ":
-                user["word"] = ""
                 user["sentence"] += " "
             else:
-                user["word"] += predicted_character
                 user["sentence"] += predicted_character
             user["last_detected_time"] = None
             user["selection_effect_time"] = time.time()
@@ -137,9 +133,8 @@ async def process_frame(file: UploadFile = File(...), session_id: str = Form(...
         user["last_detected_time"] = None
 
     if time.time() - user["selection_effect_time"] < 0.5:
-        cv2.rectangle(frame, (50, 150), (600, 400), (0, 255, 0), -1)
-        cv2.putText(frame, f'Selected: {user["current_character"]}', (200, 300),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 5, cv2.LINE_AA)
+        cv2.putText(frame, f'Selected: {user["current_character"]}', (0, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 5, cv2.LINE_AA)
 
     _, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 60])
     img_str = base64.b64encode(buffer).decode('utf-8')
