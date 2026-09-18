@@ -16,7 +16,7 @@ from typing import Dict
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-model_dict = pickle.load(open('model.p', 'rb'))
+model_dict = pickle.load(open('models/model.p', 'rb'))
 model = model_dict['model']
 
 mp_hands = mp.solutions.hands
