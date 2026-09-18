@@ -159,6 +159,7 @@ python src/model_train.py
 Output generated: models/model.p
 
 ```
+---
 ## 🌐 API Specification
 ```
 1. POST /process_frame
@@ -190,6 +191,41 @@ Translates assembled text into target natural languages.
   "translated": "चावल"
   }
 ```
+---
+
+## 🚀 Future Enhancements
+
+* [ ] **Two-Hand Landmark Support**: Expand coordinate vector length to 84 elements to enable complex two-handed signs.
+* [ ] **Dynamic Gesture Recognition**: Implement LSTM / GRU networks to handle motion-based signs alongside static poses.
+* [ ] **WebSocket Integration**: Transition `/process_frame` from HTTP polling to full-duplex WebSockets to reduce frame latency.
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! 
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+
+## 🙏 Acknowledgements
+
+* [MediaPipe Hands](https://google.github.io/mediapipe/solutions/hands.html) for fast keypoint extraction.
+* [FastAPI](https://fastapi.tiangolo.com/) for modern Python web server support.
+* [Scikit-Learn](https://scikit-learn.org/) for robust Machine Learning estimators.
+
+---
 ## 👨‍💻 Author
 ```
 Aabhas Bhandari
